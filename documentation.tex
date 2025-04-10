@@ -1,0 +1,109 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{booktabs}
+
+\geometry{a4paper, margin=1in}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numbersep=5pt,
+    showstringspaces=false,
+    keywordstyle=\color{blue},
+    commentstyle=\color{codegreen},
+    stringstyle=\color{codepurple}
+    
+\title{Pulse Class Documentation}
+\author{Quantum Simulation Toolkit}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+The \texttt{Pulse} class models time-dependent laser parameters for quantum simulations:
+\begin{itemize}
+    \item \(\Omega(t)\): Rabi frequency (MHz)
+    \item \(\phi(t)\): Phase (radians)
+    \item \(\delta(t)\): Detuning (MHz)
+\end{itemize}
+
+\section{Class Features}
+\begin{itemize}
+    \item Independent configuration of \(\Omega\), \(\phi\), and \(\delta\)
+    \item Pre-built waveform shapes: \texttt{constant}, \texttt{gaussian}, \texttt{linear}
+    \item Custom mathematical functions support
+    \item Integrated visualization
+\end{itemize}
+
+\section{Initialization}
+\begin{lstlisting}[language=Python]
+pulse = Pulse()  # No required arguments
+\end{lstlisting}
+
+\section{Configuration Methods}
+Configure parameters independently using:
+\begin{lstlisting}[language=Python]
+pulse.set_omega(shape: str, **kwargs)
+pulse.set_phi(shape: str, **kwargs)
+pulse.set_delta(shape: str, **kwargs)
+\end{lstlisting}
+
+\subsection{Supported Waveform Types}
+\begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Shape} & \textbf{Parameters} & \textbf{Description} \\
+    \midrule
+    \texttt{constant} & \texttt{value: float} & Fixed value \\
+    \texttt{gaussian} & \texttt{amp, t0, sigma: float} & Gaussian pulse \\
+    \texttt{linear} & \texttt{slope, intercept: float} & Linear ramp \\
+    \texttt{custom} & \texttt{func: Callable} & User-defined function \\
+    \bottomrule
+\end{tabular}
+
+\section{Visualization}
+Plot parameters over time:
+\begin{lstlisting}[language=Python]
+pulse.plot(t_range=(0, 5), num_points=200)
+\end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pulse_plot.png}
+    \caption{Sample pulse visualization showing Gaussian \(\Omega(t)\), linear \(\phi(t)\), and constant \(\delta(t)\)}
+\end{figure}
+
+\section{Example Usage}
+\subsection{Basic Configuration}
+\begin{lstlisting}[language=Python]
+pulse = Pulse()
+pulse.set_omega('gaussian', amp=10.0, t0=2.5, sigma=0.5)
+pulse.set_phi('linear', slope=np.pi/2, intercept=0.0)
+pulse.set_delta('constant', value=1.0)
+\end{lstlisting}
+
+\subsection{Custom Waveform}
+\begin{lstlisting}[language=Python]
+# Custom delta(t) = sin(2π*0.5*t)
+pulse.set_delta('custom', 
+               func=lambda t, p: np.sin(2*np.pi*0.5*t))
+\end{lstlisting}
+
+\section*{Notes}
+\begin{itemize}
+    \item Time units: microseconds (\(\mu\)s)
+    \item Frequency units: MHz for \(\Omega\) and \(\delta\)
+    \item Phase values not automatically wrapped to \(2\pi\)
+    \item Custom functions must accept \texttt{(t, params)} arguments
+\end{itemize}
+
+\end{document}
